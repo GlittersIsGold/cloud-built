@@ -1,0 +1,96 @@
+---
+remote: 'cloud@172.16.0.2:/home/cloud/images/{branch}/{arch}'
+repository_url: http://mirror.yandex.ru/altlinux/{branch}/branch
+try_build_all: True
+log_level: debug
+
+rebuild_after:
+  days: 5
+
+images:
+  rootfs-minimal:
+    target: ve/docker
+    kinds:
+    - tar.xz
+    tests:
+    - method: docker
+  rootfs-systemd:
+    target: ve/systemd-networkd
+    kinds:
+    - tar.xz
+    tests:
+    - method: lxd
+    scripts:
+    - securetty
+    - resolved
+    packages:
+    - apt-scripts
+    - systemd-settings-disable-kill-user-processes
+  rootfs-systemd-etcnet:
+    target: ve/systemd-etcnet
+    kinds:
+    - tar.xz
+    tests:
+    - method: lxd
+    scripts:
+    - securetty
+  rootfs-sysvinit:
+    target: ve/sysvinit-etcnet
+    kinds:
+    - tar.xz
+    tests:
+    - method: lxd
+    scripts:
+    - securetty
+    exclude_branches:
+    - p8
+    - c8
+
+branches:
+  Sisyphus:
+    arches:
+      i586:
+      x86_64:
+    repository_url: http://mirror.yandex.ru/altlinux/{branch}
+  p10:
+    arches:
+      i586:
+      x86_64:
+    branding: alt-starterkit
+  p9:
+    arches:
+      i586:
+      x86_64:
+    branding: alt-starterkit
+  p8:
+    arches:
+      i586:
+      x86_64:
+    branding: alt-starterkit
+
+scripts:
+  securetty:
+    contents: |
+      #!/bin/sh
+
+      echo pts/0 >> /etc/securetty
+      echo pts/1 >> /etc/securetty
+    global: no
+    number: 1
+  resolved:
+    contents: |
+      #!/bin/sh
+
+      ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+    global: no
+    number: 99
+  apt_sources:
+    contents: |
+      #!/bin/sh
+
+      repo_source=/etc/apt/sources.list.d/altsp.list
+      [ -s "$repo_source" ] || exit 0
+      sed -i -E 's/^\s*#(rpm.*http)/\1/' "$repo_source"
+    global: no
+    number: 80
+...
