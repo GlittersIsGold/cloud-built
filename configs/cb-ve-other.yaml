@@ -43,7 +43,6 @@ images:
     scripts:
     - securetty
     exclude_branches:
-    - p8
     - c8
 
 branches:

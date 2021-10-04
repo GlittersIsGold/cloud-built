@@ -43,7 +43,6 @@ images:
     scripts:
     - securetty
     exclude_branches:
-    - p8
     - c8
 
 branches:
@@ -58,11 +57,6 @@ branches:
       x86_64:
     branding: alt-starterkit
   p9:
-    arches:
-      i586:
-      x86_64:
-    branding: alt-starterkit
-  p8:
     arches:
       i586:
       x86_64:
