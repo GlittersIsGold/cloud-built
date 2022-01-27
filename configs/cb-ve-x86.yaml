@@ -1,6 +1,6 @@
 ---
 remote: 'cloud@172.16.0.2:/home/cloud/images/{branch}/{arch}'
-repository_url: http://mirror.yandex.ru/altlinux/{branch}/branch
+repository_url: copy:///space/ALT/{branch}
 try_build_all: True
 log_level: debug
 
@@ -49,7 +49,6 @@ branches:
     arches:
       i586:
       x86_64:
-    repository_url: http://mirror.yandex.ru/altlinux/{branch}
   p10:
     arches:
       i586:
