@@ -68,6 +68,7 @@ scripts:
 
       echo pts/0 >> /etc/securetty
       echo pts/1 >> /etc/securetty
+      echo console >> /etc/securetty
     global: no
     number: 1
   apt_sources:
