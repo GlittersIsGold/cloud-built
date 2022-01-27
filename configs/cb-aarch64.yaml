@@ -22,7 +22,6 @@ images:
     - method: lxd
     scripts:
     - securetty
-    - resolved
     packages:
     - apt-scripts
     - systemd-settings-disable-kill-user-processes
@@ -46,8 +45,7 @@ images:
     target: vm/cloud-systemd
     kinds:
     - qcow2c
-    scripts:
-    - resolved
+    # scripts:
     packages:
     - update-kernel
     - apt-scripts
@@ -79,13 +77,6 @@ scripts:
       echo pts/1 >> /etc/securetty
     global: no
     number: 1
-  resolved:
-    contents: |
-      #!/bin/sh
-
-      ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
-    global: no
-    number: 99
   apt_sources:
     contents: |
       #!/bin/sh
