@@ -23,9 +23,6 @@ images:
     scripts:
     - securetty
     - machine_id
-    packages:
-    - apt-scripts
-    - systemd-settings-disable-kill-user-processes
   rootfs-systemd-etcnet:
     target: ve/systemd-etcnet
     kinds:

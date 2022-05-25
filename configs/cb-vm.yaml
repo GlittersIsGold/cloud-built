@@ -36,10 +36,6 @@ images:
     - c8
     scripts:
     - machine_id
-    packages:
-    - update-kernel
-    - apt-scripts
-    - systemd-settings-disable-kill-user-processes
     tests:
     - method: prog(cloud-build-test-cloud)
     rename:

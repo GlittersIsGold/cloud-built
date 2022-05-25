@@ -23,9 +23,6 @@ images:
     scripts:
     - securetty
     - machine_id
-    packages:
-    - apt-scripts
-    - systemd-settings-disable-kill-user-processes
   rootfs-systemd-etcnet:
     target: ve/systemd-etcnet
     kinds:
@@ -49,10 +46,6 @@ images:
     - qcow2c
     scripts:
     - machine_id
-    packages:
-    - update-kernel
-    - apt-scripts
-    - systemd-settings-disable-kill-user-processes
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
