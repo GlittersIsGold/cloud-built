@@ -41,6 +41,24 @@ images:
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
+  workstation-cloud:
+    target: vm/alt-workstation-cloud
+    kinds:
+    - qcow2c
+    exclude_arches:
+    - aarch64
+    - armh
+    - ppc64le
+    exclude_branches:
+    - p8
+    - c8
+    scripts:
+    - machine_id
+    tests:
+    - method: prog(cloud-build-test-cloud)
+    rename:
+      regex: '(.*)\.qcow2c$'
+      to: '\1.qcow2'
 
 branches:
   Sisyphus:

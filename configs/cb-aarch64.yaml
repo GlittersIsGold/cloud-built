@@ -49,6 +49,15 @@ images:
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
+  workstation-cloud:
+    target: vm/alt-workstation-cloud
+    kinds:
+    - qcow2c
+    scripts:
+    - machine_id
+    rename:
+      regex: '(.*)\.qcow2c$'
+      to: '\1.qcow2'
 
 branches:
   Sisyphus:
