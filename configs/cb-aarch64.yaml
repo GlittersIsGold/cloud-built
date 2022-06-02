@@ -45,6 +45,8 @@ images:
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
+    scripts:
+    - grub_install
   workstation-cloud:
     target: vm/alt-workstation-cloud
     kinds:
@@ -57,6 +59,8 @@ images:
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
+    scripts:
+    - grub_install
 
 branches:
   Sisyphus:
@@ -73,6 +77,18 @@ branches:
     branding: alt-starterkit
 
 scripts:
+  grub_install:
+    contents: |
+      #!/bin/sh
+
+      mkdir -p /etc/firsttime.d
+      touch /etc/firsttime.d/grub-install
+      chmod +x /etc/firsttime.d/grub-install
+      echo '#!/bin/sh -eu'  >> /etc/firsttime.d/grub-install
+      echo >> /etc/firsttime.d/grub-install
+      echo grub-install  >> /etc/firsttime.d/grub-install
+    global: no
+    number: 80
   securetty:
     contents: |
       #!/bin/sh
