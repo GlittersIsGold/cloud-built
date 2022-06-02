@@ -53,6 +53,11 @@ images:
     target: vm/alt-workstation-cloud
     kinds:
     - qcow2c
+    exclude_branches:
+    - Sisyphus
+    - p9
+    - p8
+    - c8
     scripts:
     - machine_id
     rename:

@@ -51,6 +51,8 @@ images:
     - ppc64le
     - i586
     exclude_branches:
+    - Sisyphus
+    - p9
     - p8
     - c8
     scripts:
