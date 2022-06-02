@@ -18,8 +18,6 @@ images:
     - ppc64le
     exclude_branches:
     - c8
-    scripts:
-    - machine_id
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
@@ -34,8 +32,6 @@ images:
     exclude_branches:
     - p8
     - c8
-    scripts:
-    - machine_id
     tests:
     - method: prog(cloud-build-test-cloud)
     rename:
@@ -55,8 +51,6 @@ images:
     - p9
     - p8
     - c8
-    scripts:
-    - machine_id
     tests:
     - method: prog(cloud-build-test-cloud)
     rename:
@@ -89,17 +83,6 @@ branches:
     branding: alt-starterkit
 
 scripts:
-  machine_id:
-    contents: |
-      #!/bin/sh -exu
-
-      etc_machine_id=/etc/machine-id
-      dbus_machine_id=/var/lib/dbus/machine-id
-
-      rm -f "$etc_machine_id" "$dbus_machine_id"
-      touch "$etc_machine_id"
-    global: no
-    number: 90
   securetty:
     contents: |
       #!/bin/sh

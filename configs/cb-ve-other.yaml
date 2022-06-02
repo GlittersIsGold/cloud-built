@@ -22,7 +22,6 @@ images:
     - method: lxd
     scripts:
     - securetty
-    - machine_id
   rootfs-systemd-etcnet:
     target: ve/systemd-etcnet
     kinds:
@@ -31,7 +30,6 @@ images:
     - method: lxd
     scripts:
     - securetty
-    - machine_id
   rootfs-sysvinit:
     target: ve/sysvinit-etcnet
     kinds:
@@ -60,17 +58,6 @@ branches:
     branding: alt-starterkit
 
 scripts:
-  machine_id:
-    contents: |
-      #!/bin/sh -exu
-
-      etc_machine_id=/etc/machine-id
-      dbus_machine_id=/var/lib/dbus/machine-id
-
-      rm -f "$etc_machine_id" "$dbus_machine_id"
-      touch "$etc_machine_id"
-    global: no
-    number: 90
   securetty:
     contents: |
       #!/bin/sh
