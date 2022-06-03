@@ -49,6 +49,7 @@ images:
     - grub_install
   workstation-cloud:
     target: vm/alt-workstation-cloud
+    branding: 'none'
     kinds:
     - qcow2c
     exclude_branches:

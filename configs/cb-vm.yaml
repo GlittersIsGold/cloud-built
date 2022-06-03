@@ -39,6 +39,7 @@ images:
       to: '\1.qcow2'
   workstation-cloud:
     target: vm/alt-workstation-cloud
+    branding: 'none'
     kinds:
     - qcow2c
     exclude_arches:
