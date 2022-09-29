@@ -16,6 +16,7 @@ images:
     - aarch64
     - armh
     - ppc64le
+    - i586
     exclude_branches:
     - c8
     rename:
@@ -29,6 +30,7 @@ images:
     - aarch64
     - armh
     - ppc64le
+    - i586
     exclude_branches:
     - p8
     - c8
