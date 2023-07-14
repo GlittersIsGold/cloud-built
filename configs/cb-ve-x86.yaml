@@ -22,6 +22,7 @@ images:
     - method: lxd
     scripts:
     - securetty
+    - netsharedpath
   rootfs-systemd-etcnet:
     target: ve/systemd-etcnet
     kinds:
@@ -30,6 +31,7 @@ images:
     - method: lxd
     scripts:
     - securetty
+    - netsharedpath
   rootfs-sysvinit:
     target: ve/sysvinit-etcnet
     kinds:
@@ -38,6 +40,7 @@ images:
     - method: lxd
     scripts:
     - securetty
+    - netsharedpath
     exclude_branches:
     - c8
 
@@ -67,6 +70,13 @@ scripts:
       echo console >> /etc/securetty
     global: no
     number: 1
+  netsharedpath:
+    contents: |
+      #!/bin/sh
+
+      echo %_netsharedpath /sys:/proc > /etc/rpm/macros.d/container
+    global: no
+    number: 20
   apt_sources:
     contents: |
       #!/bin/sh
