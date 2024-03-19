@@ -39,26 +39,26 @@ images:
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'
-  workstation-cloud:
-    target: vm/alt-workstation-cloud
-    branding: 'none'
-    kinds:
-    - qcow2c
-    exclude_arches:
-    - aarch64
-    - armh
-    - ppc64le
-    - i586
-    exclude_branches:
-    - Sisyphus
-    - p9
-    - p8
-    - c8
-    tests:
-    - method: prog(cloud-build-test-cloud)
-    rename:
-      regex: '(.*)\.qcow2c$'
-      to: '\1.qcow2'
+  # workstation-cloud:
+    # target: vm/alt-workstation-cloud
+    # branding: 'none'
+    # kinds:
+    # - qcow2c
+    # exclude_arches:
+    # - aarch64
+    # - armh
+    # - ppc64le
+    # - i586
+    # exclude_branches:
+    # - Sisyphus
+    # - p9
+    # - p8
+    # - c8
+    # tests:
+    # - method: prog(cloud-build-test-cloud)
+    # rename:
+      # regex: '(.*)\.qcow2c$'
+      # to: '\1.qcow2'
 
 branches:
   Sisyphus:

@@ -50,21 +50,21 @@ images:
       to: '\1.qcow2'
     scripts:
     - grub_install
-  workstation-cloud:
-    target: vm/alt-workstation-cloud
-    branding: 'none'
-    kinds:
-    - qcow2c
-    exclude_branches:
-    - Sisyphus
-    - p9
-    - p8
-    - c8
-    rename:
-      regex: '(.*)\.qcow2c$'
-      to: '\1.qcow2'
-    scripts:
-    - grub_install
+  # workstation-cloud:
+    # target: vm/alt-workstation-cloud
+    # branding: 'none'
+    # kinds:
+    # - qcow2c
+    # exclude_branches:
+    # - Sisyphus
+    # - p9
+    # - p8
+    # - c8
+    # rename:
+      # regex: '(.*)\.qcow2c$'
+      # to: '\1.qcow2'
+    # scripts:
+    # - grub_install
 
 branches:
   Sisyphus:
