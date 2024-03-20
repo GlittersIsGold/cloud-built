@@ -54,11 +54,6 @@ branches:
       ppc64le:
       armh:
     branding: alt-starterkit
-  p9:
-    arches:
-      ppc64le:
-      armh:
-    branding: alt-starterkit
 
 scripts:
   securetty:

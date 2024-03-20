@@ -75,10 +75,6 @@ branches:
     arches:
       aarch64:
     branding: alt-starterkit
-  p9:
-    arches:
-      aarch64:
-    branding: alt-starterkit
 
 scripts:
   grub_install:
