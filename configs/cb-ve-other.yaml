@@ -48,7 +48,6 @@ branches:
   Sisyphus:
     arches:
       ppc64le:
-      armh:
   p10:
     arches:
       ppc64le:
