@@ -1,0 +1,66 @@
+name: Building images
+on: 
+  push:
+    tags:
+      - '*'
+
+jobs:
+  Building ve-x86 process:
+    runs-on: alt-sisyphus
+    steps:
+      - name: Configure ssh
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/builder.key
+          chmod 600 ~/.ssh/builder.key
+          #echo "$SSH_KH" > ~/.ssh/known_hosts #SSH_KH: ${{ secrets.BUILDER_SSH_KH }}
+          cat >>~/.ssh/config <<END
+          Host builder
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/builder.key
+            StrictHostKeyChecking no
+          Host taishan
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
+            Port $SSH_T_PORT
+            IdentityFile ~/.ssh/builder.key 
+            StrictHostKeyChecking no
+          END          
+        env:
+          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_T_USER: ${{ secret.TAISHAN_SSH_USER }}
+          SSH_T_PORT: ${{ secret.TAISHAN_SSH_PORT }}
+          SSH_T_HOST: ${{ secret.TAISHAN_SSH_HOST }}
+      - name: Display Python version
+        run: ssh builder 'python3 --version'
+      - name: Check script folder
+        run: |
+          ssh builder 'll -a cloud-build/'          
+      - name: Update building script from git
+        run: |
+          ssh builder 'cd cloud-build && git pull -f origin configs'          
+      - name: Run script for x86
+        run: |
+          ssh builder 'cloud-build/cloud-build.py -c cloud-build/configs/cb-ve-x86.yaml \
+          --stages build test sync --create-remote-dirs'          
+      - name: Check scripts result for x86
+        run: |
+          ssh builder 'll -a images/Sisyphus/x86_64/' 
+      - name: Run script for vm
+        run: |
+          ssh builder 'cloud-build/cloud-build.py -c cloud-build/configs/cb-vm.yaml \
+          --stages build test sync --create-remote-dirs'                                  
+      - name: Check scripts result for vm
+        run: |
+          ssh builder 'll -a images/Sisyphus/x86_64/'
+      - name: Run script for aarch
+        run: |                                                                           
+          ssh taishan 'prog/cloud-build/cloud-build.py -c prog/cloud-build/configs/cb-aarch64.yaml \        
+          --stages build test sync --create-remote-dirs'                                      
+      - name: Check scripts result for aarch                                                       
+        run: |                                                                            
+          ssh taishan 'll -a images/Sisyphus/aarch64/'
+      - run: echo "This job's status is ${{ job.status }}."
