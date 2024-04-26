@@ -1,5 +1,5 @@
 ---
-remote: 'cloud@172.16.0.2:/home/cloud/images/{branch}/{arch}'
+remote: '/home/builder/images/{branch}/{arch}'
 repository_url: copy:///space/ALT/{branch}
 try_build_all: True
 log_level: debug
