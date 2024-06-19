@@ -61,13 +61,14 @@ images:
       # to: '\1.qcow2'
 
 branches:
-  Sisyphus:
+  p11:
     arches:
       i586:
       x86_64:
       # aarch64:
       # ppc64le:
       # armh:
+    branding: alt-starterkit
 
 scripts:
   securetty:

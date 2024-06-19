@@ -45,10 +45,11 @@ images:
     - c8
 
 branches:
-  Sisyphus:
+  p11:
     arches:
       i586:
       x86_64:
+    branding: alt-starterkit
 
 scripts:
   securetty:
