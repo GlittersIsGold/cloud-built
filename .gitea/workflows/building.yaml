@@ -1,11 +1,11 @@
-name: Building images
+name: Building cloud-images
 on: 
   push:
     tags:
       - '*'
 
 jobs:
-  Building ve-x86 process:
+  building:
     runs-on: alt-sisyphus
     steps:
       - name: Configure ssh
