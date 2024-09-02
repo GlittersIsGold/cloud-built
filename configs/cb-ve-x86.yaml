@@ -41,8 +41,6 @@ images:
     scripts:
     - securetty
     - netsharedpath
-    exclude_branches:
-    - c8
 
 branches:
   Sisyphus:
@@ -50,6 +48,11 @@ branches:
       i586:
       x86_64:
   p10:
+    arches:
+      i586:
+      x86_64:
+    branding: alt-starterkit
+  p11:
     arches:
       i586:
       x86_64:

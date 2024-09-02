@@ -66,6 +66,10 @@ branches:
     arches:
       aarch64:
     branding: alt-starterkit
+  p11:
+    arches:
+      aarch64:
+    branding: alt-starterkit
 
 scripts:
   machine_id:

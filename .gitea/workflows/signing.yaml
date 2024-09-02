@@ -1,8 +1,8 @@
-name: Building cloud-images
+name: Signing cloud-images
 on: 
   push:
     tags:
-      - 'build*'
+      - 'sign*'
 
 jobs:
   building:
@@ -39,32 +39,13 @@ jobs:
         run: ssh builder 'python3 --version'
       - name: Check script folder
         run: |
-          ssh builder 'ls -a cloud-build/'          
+          ssh builder 'ls -a cloud-build/'
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git pull -f origin configs --rebase'          
-      - name: Run script for x86
+          ssh builder 'cd cloud-build && git pull -f origin configs --rebase'                    
+      - name: Run sign script
         run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
-          --stages build test sync --create-remote-dirs'          
+          ssh builder 'cd cloud-build && ./cloud-build.py --built-images-dir ~/images --stages copy_external_files sign sync -c ~/sign-config/master.yaml'                    
       - name: Check scripts result for x86
         run: |
-          ssh builder 'ls -a images/Sisyphus/x86_64/' 
-      - name: Run script for vm
-        run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm.yaml \
-          --stages build test sync --create-remote-dirs'                                  
-      - name: Check scripts result for vm
-        run: |
-          ssh builder 'ls -a images/Sisyphus/x86_64/'
-      - name: Run script for aarch
-        run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-aarch64.yaml \
-          --stages build test sync --create-remote-dirs'
-          #ssh taishan 'prog/cloud-build/cloud-build.py -c prog/cloud-build/configs/cb-aarch64.yaml \        
-          #--stages build test sync --create-remote-dirs'                                      
-      - name: Check scripts result for aarch                                                       
-        run: | 
-          ssh builder 'ls -a images/Sisyphus/aarch64/'
-          #ssh taishan 'ls -a images/Sisyphus/aarch64/'
-      - run: echo "This job's status is ${{ job.status }}."
+          ssh builder 'ls -a proto/Sisyphus/cloud/x86_64/' 
