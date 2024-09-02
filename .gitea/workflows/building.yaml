@@ -42,7 +42,7 @@ jobs:
           ssh builder 'ls -a cloud-build/'          
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git pull -f origin configs'          
+          ssh builder 'cd cloud-build && git pull -f origin configs --rebase'          
       - name: Run script for x86
         run: |
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
