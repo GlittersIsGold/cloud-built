@@ -22,10 +22,12 @@ jobs:
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
           Host taishan
-            HostName $SSH_T_HOST
+            HostName 127.0.0.1
             User $SSH_T_USER
             Port $SSH_T_PORT
             IdentityFile ~/.ssh/builder.key 
+            IdentitiesOnly yes
+            ProxyCommand ssh $SSH_T_USER@$SSH_T_HOST -W %h:%p
             StrictHostKeyChecking no
           END
         env:
@@ -42,7 +44,7 @@ jobs:
           ssh builder 'ls -a cloud-build/'          
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git pull -f origin configs --rebase'          
+          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
       - name: Run script for x86
         run: |
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
@@ -57,14 +59,14 @@ jobs:
       - name: Check scripts result for vm
         run: |
           ssh builder 'ls -a images/Sisyphus/x86_64/'
+      - name: Update building script from git                                          
+        run: |                                                                         
+          ssh taishan 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
       - name: Run script for aarch
         run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-aarch64.yaml \
+          ssh taishan 'cd cloud-build && ./cloud-build.py -c ./configs/cb-aarch64.yaml \
           --stages build test sync --create-remote-dirs'
-          #ssh taishan 'prog/cloud-build/cloud-build.py -c prog/cloud-build/configs/cb-aarch64.yaml \        
-          #--stages build test sync --create-remote-dirs'                                      
       - name: Check scripts result for aarch                                                       
         run: | 
           ssh builder 'ls -a images/Sisyphus/aarch64/'
-          #ssh taishan 'ls -a images/Sisyphus/aarch64/'
       - run: echo "This job's status is ${{ job.status }}."

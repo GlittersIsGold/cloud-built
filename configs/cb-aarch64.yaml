@@ -1,5 +1,5 @@
 ---
-remote: '/home/builder/images/{branch}/{arch}'
+remote: 'builder@cloud-builder.office.basealt.ru:/home/builder/images/{branch}/{arch}'
 repository_url: http://mirror.yandex.ru/altlinux/{branch}/branch
 try_build_all: True
 log_level: debug
