@@ -30,7 +30,11 @@ jobs:
       - name: Run script for x86
         run: |
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
-          --stages build test sync --create-remote-dirs'          
+          --stages build test sync --create-remote-dirs' 
+      - name: Run script for container x86
+        run: |
+          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/container-x86.yaml \
+          --stages build test sync --create-remote-dirs'
 
   building-x86-vm:
     runs-on: alt-sisyphus
@@ -85,3 +89,6 @@ jobs:
       - name: Run script for aarch
         run: |
           ssh -A abuilder "ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-aarch64.yaml --stages build test sync --create-remote-dirs'"
+      - name: Run script for container aarch
+        run: |
+          ssh -A abuilder "ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/container-aarch64.yaml --stages build test sync --create-remote-dirs'"
