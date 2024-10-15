@@ -5,7 +5,7 @@ on:
       - 'build*'
 
 jobs:
-  building:
+  building-x86:
     runs-on: alt-sisyphus
     steps:
       - name: Configure ssh
@@ -13,35 +13,17 @@ jobs:
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
-          echo "SSH_USER=$SSH_USER, SSH_HOST=$SSH_HOST, SSH_TAISHAN_USER=$SSH_T_USER, SSH_TAISHAN_HOST=$SSH_T_HOST, SSH_TAISHAN_PORT=$SSH_T_PORT"
-          #> ~/.ssh/known_hosts #SSH_KH: ${{ secrets.BUILDER_SSH_KH }}
           cat >>~/.ssh/config <<END
           Host builder
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
-          Host taishan
-            HostName 127.0.0.1
-            User $SSH_T_USER
-            Port $SSH_T_PORT
-            IdentityFile ~/.ssh/builder.key 
-            IdentitiesOnly yes
-            ProxyCommand ssh $SSH_T_USER@$SSH_T_HOST -W %h:%p
-            StrictHostKeyChecking no
           END
         env:
           SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
           SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
-          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
-          SSH_T_PORT: ${{ secrets.TAISHAN_SSH_PORT }}
-          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
-      - name: Display Python version
-        run: ssh builder 'python3 --version'
-      - name: Check script folder
-        run: |
-          ssh builder 'ls -a cloud-build/'          
       - name: Update building script from git
         run: |
           ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
@@ -49,24 +31,57 @@ jobs:
         run: |
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
           --stages build test sync --create-remote-dirs'          
-      - name: Check scripts result for x86
+
+  building-x86-vm:
+    runs-on: alt-sisyphus
+    steps:
+      - name: Configure ssh
         run: |
-          ssh builder 'ls -a images/Sisyphus/x86_64/' 
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/builder.key
+          chmod 600 ~/.ssh/builder.key
+          cat >>~/.ssh/config <<END
+          Host builder
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/builder.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+      - name: Update building script from git
+        run: |
+          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
       - name: Run script for vm
-        run: |
+        run: |                                        
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm.yaml \
-          --stages build test sync --create-remote-dirs'                                  
-      - name: Check scripts result for vm
+           --stages build test sync --create-remote-dirs'                                                   
+
+  building-aarch:
+    runs-on: alt-sisyphus
+    steps:
+      - name: Configure ssh
         run: |
-          ssh builder 'ls -a images/Sisyphus/x86_64/'
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/builder.key
+          chmod 600 ~/.ssh/builder.key
+          cat >>~/.ssh/config <<END
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
+            IdentityFile ~/.ssh/builder.key 
+            IdentitiesOnly yes
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update building script from git                                          
         run: |                                                                         
-          ssh taishan 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
+          ssh -A abuilder "ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
       - name: Run script for aarch
         run: |
-          ssh taishan 'cd cloud-build && ./cloud-build.py -c ./configs/cb-aarch64.yaml \
-          --stages build test sync --create-remote-dirs'
-      - name: Check scripts result for aarch                                                       
-        run: | 
-          ssh builder 'ls -a images/Sisyphus/aarch64/'
-      - run: echo "This job's status is ${{ job.status }}."
+          ssh -A abuilder "ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-aarch64.yaml --stages build test sync --create-remote-dirs'"
