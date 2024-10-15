@@ -8,12 +8,6 @@ rebuild_after:
   days: 5
 
 images:
-  rootfs-minimal:
-    target: ve/docker
-    kinds:
-    - tar.xz
-    tests:
-    - method: docker
   rootfs-systemd:
     target: ve/systemd-networkd
     kinds:
