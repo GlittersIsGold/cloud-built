@@ -238,6 +238,9 @@ class CB:
         self._repository_url = cfg.get('repository_url',
                                        'copy:///space/ALT/{branch}')
 
+        self._other_repo_url = cfg.get('other_repo_url',
+                                       'http://ftp.altlinux.org/pub/distributions/ALTLinux/ports/{arch}')
+
         self._image_repo = cfg.get('image_repo')
 
         self.patch_mp_prog = get_overrided('patch_mp_prog')
@@ -314,6 +317,14 @@ class CB:
             url = self._branches[branch].get('repository_url',
                                              self._repository_url)
         return url.format(branch=branch, arch=arch)
+
+    def other_repo_url(self, branch: str, arch: str) -> str:
+        url = self._branches[branch]['arches'][arch].get('repository_url')
+        if url is None:
+            url = self._branches[branch].get('repository_url',
+                                             self._repository_url)
+        return url.format(branch=branch, arch=arch)
+
 
     def image_repo(self, branch: str, arch: str) -> str:
         url = self._branches[branch]['arches'][arch].get('image_repo')
@@ -394,13 +405,17 @@ Dir::Etc::preferencesparts "/var/empty";
 
                 with open(f'{apt_dir}/sources.list.{branch}.{arch}', 'w') as f:
                     sources_list = f'rpm {repo} {arch} classic\n'
-                    if arch == 'x86_64':
-                        sources_list += f'rpm {repo} {arch}-i586 classic\n'
-                    if arch not in self.bad_arches:
-                        sources_list += f'rpm {repo} noarch classic\n'
-                    for task in self.tasks.get(branch.lower(), []):
-                        tr = 'http://git.altlinux.org'
-                        sources_list += f'rpm {tr} repo/{task}/{arch} task\n'
+                    if arch in ['loongarch64', 'riscv64']:
+                        sources_list = f'rpm {repo} {branch}/{arch} classic\n'
+                        sources_list += f'rpm {repo} {branch}/noarch classic\n'
+                    else: 
+                        if arch == 'x86_64':
+                            sources_list += f'rpm {repo} {arch}-i586 classic\n'
+                        if arch not in self.bad_arches:
+                            sources_list += f'rpm {repo} noarch classic\n'
+                        for task in self.tasks.get(branch.lower(), []):
+                            tr = 'http://git.altlinux.org'
+                            sources_list += f'rpm {tr} repo/{task}/{arch} task\n'
                     f.write(sources_list)
 
     def escape_branch(self, branch: str) -> str:

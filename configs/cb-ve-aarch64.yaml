@@ -1,6 +1,6 @@
 ---
-remote: '/home/builder/images/{branch}/{arch}'
-repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/ports/{arch}
+remote: 'builder@cloud-builder.office.basealt.ru:/home/builder/images/{branch}/{arch}'
+repository_url: http://mirror.yandex.ru/altlinux/{branch}/branch
 try_build_all: True
 log_level: debug
 
@@ -22,7 +22,10 @@ images:
     - method: lxd
     scripts:
     - securetty
-    - netsharedpath
+    - machine_id
+    packages:
+    - apt-scripts
+    - systemd-settings-disable-kill-user-processes
   rootfs-systemd-etcnet:
     target: ve/systemd-etcnet
     kinds:
@@ -31,7 +34,7 @@ images:
     - method: lxd
     scripts:
     - securetty
-    - netsharedpath
+    - machine_id
   rootfs-sysvinit:
     target: ve/sysvinit-etcnet
     kinds:
@@ -40,31 +43,41 @@ images:
     - method: lxd
     scripts:
     - securetty
-    - netsharedpath
 
 branches:
   Sisyphus:
     arches:
-      loongarch64:
-      riscv64:
+      aarch64:
+    repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/{branch}
+  p10:
+    arches:
+      aarch64:
+    branding: alt-container
+  p11:
+    arches:
+      aarch64:
+    branding: alt-container
 
 scripts:
+  machine_id:
+    contents: |
+      #!/bin/sh -exu
+
+      etc_machine_id=/etc/machine-id
+      dbus_machine_id=/var/lib/dbus/machine-id
+
+      rm -f "$etc_machine_id" "$dbus_machine_id"
+      touch "$etc_machine_id"      
+    global: no
+    number: 90
   securetty:
     contents: |
       #!/bin/sh
 
       echo pts/0 >> /etc/securetty
       echo pts/1 >> /etc/securetty
-      echo console >> /etc/securetty
     global: no
     number: 1
-  netsharedpath:
-    contents: |
-      #!/bin/sh
-
-      echo %_netsharedpath /sys:/proc > /etc/rpm/macros.d/container
-    global: no
-    number: 20
   apt_sources:
     contents: |
       #!/bin/sh

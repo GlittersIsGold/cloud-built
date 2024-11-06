@@ -8,35 +8,6 @@ rebuild_after:
   days: 5
 
 images:
-  rootfs-systemd:
-    target: ve/systemd-networkd
-    kinds:
-    - tar.xz
-    tests:
-    - method: lxd
-    scripts:
-    - securetty
-    - machine_id
-    packages:
-    - apt-scripts
-    - systemd-settings-disable-kill-user-processes
-  rootfs-systemd-etcnet:
-    target: ve/systemd-etcnet
-    kinds:
-    - tar.xz
-    tests:
-    - method: lxd
-    scripts:
-    - securetty
-    - machine_id
-  rootfs-sysvinit:
-    target: ve/sysvinit-etcnet
-    kinds:
-    - tar.xz
-    tests:
-    - method: lxd
-    scripts:
-    - securetty
   cloud:
     target: vm/cloud-systemd
     kinds:

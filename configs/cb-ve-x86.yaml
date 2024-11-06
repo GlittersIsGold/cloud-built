@@ -8,6 +8,12 @@ rebuild_after:
   days: 5
 
 images:
+  rootfs-minimal:
+    target: ve/docker
+    kinds:
+    - tar.xz
+    tests:
+    - method: docker
   rootfs-systemd:
     target: ve/systemd-networkd
     kinds:
@@ -45,12 +51,12 @@ branches:
     arches:
       i586:
       x86_64:
-    branding: alt-starterkit
+    branding: alt-container
   p11:
     arches:
       i586:
       x86_64:
-    branding: alt-starterkit
+    branding: alt-container
 
 scripts:
   securetty:
