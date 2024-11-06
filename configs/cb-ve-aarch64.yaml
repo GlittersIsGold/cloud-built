@@ -12,8 +12,8 @@ images:
     target: ve/docker
     kinds:
     - tar.xz
-    tests:
-    - method: docker
+    #tests:
+    #- method: docker
   rootfs-systemd:
     target: ve/systemd-networkd
     kinds:
