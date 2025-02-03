@@ -409,6 +409,8 @@ Dir::Etc::preferencesparts "/var/empty";
                         sources_list = f'rpm {repo} {branch}/{arch} classic\n'
                         sources_list += f'rpm {repo} {branch}/noarch classic\n'
                     else: 
+                        if branch == 'c10f2':
+                           sources_list = f'rpm {repo} {arch} classic gostcrypto\n'
                         if arch == 'x86_64':
                             sources_list += f'rpm {repo} {arch}-i586 classic\n'
                         if arch not in self.bad_arches:

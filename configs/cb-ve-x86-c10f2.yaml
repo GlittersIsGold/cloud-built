@@ -1,0 +1,62 @@
+---
+remote: '/home/builder/images/{branch}/{arch}'
+repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/{branch}/branch
+try_build_all: True
+log_level: debug
+image_repo: 'http/altsp'
+
+rebuild_after:
+  days: 5
+
+images:
+  rootfs-minimal:
+    target: ve/docker
+    kinds:
+    - tar.xz
+    #tests:
+    #- method: docker
+  rootfs-systemd:
+    target: ve/systemd-networkd
+    kinds:
+    - tar.xz
+    #tests:
+    #- method: lxd
+    scripts:
+    - securetty
+    - netsharedpath
+
+branches:
+  c10f2:
+    arches:
+      x86_64:
+      aarch64:
+      i586:
+    branding: alt-spcontainer
+
+scripts:
+  securetty:
+    contents: |
+      #!/bin/sh
+
+      echo pts/0 >> /etc/securetty
+      echo pts/1 >> /etc/securetty
+      echo console >> /etc/securetty
+      global: no
+    number: 1
+  netsharedpath:
+    contents: |
+      #!/bin/sh
+
+      echo %_netsharedpath /sys:/proc > /etc/rpm/macros.d/container
+    global: no
+    number: 20
+  apt_sources:
+    contents: |
+      #!/bin/sh
+
+      repo_source=/etc/apt/sources.list.d/altsp.list
+      [ -s "$repo_source" ] || exit 0
+      sed -i -E 's/^\s*#(rpm.*http)/\1/' "$repo_source"
+    global: no
+    number: 80
+...
