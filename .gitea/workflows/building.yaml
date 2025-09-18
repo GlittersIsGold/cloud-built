@@ -1,8 +1,6 @@
 name: Building cloud-images
 on: 
-  push:
-    tags:
-      - 'build*'
+  workflow_dispatch:
 
 jobs:
   building-x86-container:

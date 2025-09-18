@@ -1,8 +1,6 @@
 name: Signing cloud-images
 on: 
-  push:
-    tags:
-      - 'sign*'
+  workflow_dispatch:
 
 jobs:
   building:
