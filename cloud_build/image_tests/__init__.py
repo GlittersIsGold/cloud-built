@@ -24,24 +24,31 @@ def pushtmpd():
 def test(method, image, branch, arch):
     result = True
 
-    if arch not in ['x86_64', 'i586']:
-        return True
+    #if arch not in ['x86_64', 'i586']:
+    #    return True
+    
+    home_dir = f"{os.path.expanduser('~')}/cloud-build"
 
     with pushtmpd() as tmpdir:
-        image = shutil.copy(image, tmpdir)
+        image = shutil.copy2(image, tmpdir)
         image_name = os.path.basename(image)
         if method == 'lxd':
-            commands = test_lxd(image)
+            commands = test_lxd(image, branch, arch)
         elif method == 'docker':
-            commands = test_docker(image_name)
+            commands = test_docker(image_name, branch, arch)
         elif match := re.match(r'prog\(([-.\w]+)\)', method):
-            commands = [f"{match[1]} {image}"]
+            if arch not in ['x86_64', 'i586']:
+                print(f"Can't run test via vml for arch {arch}")
+                return True
+            commands = [f"{home_dir}/{match[1]} {image} {branch}"]
         else:
             raise Exception(f'Undefined test method {method}')
 
         for command in commands:
+            print(f"Start test for {image} on branch {branch} and arch {arch} via {method}")
             rc = subprocess.call(command, shell=True)
             if rc:
                 result = False
+            print("Finish test")
 
     return result

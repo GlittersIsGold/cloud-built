@@ -23,8 +23,8 @@ images:
     - qcow2c
     exclude_arches:
     - i586
-    #tests:
-    #- method: prog(cloud-build-test-cloud)
+    tests:
+    - method: prog(cloud-build-test-cloud)
     rename:
       regex: '(.*)\.qcow2c$'
       to: '\1.qcow2'

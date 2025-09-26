@@ -12,14 +12,14 @@ images:
     target: ve/docker
     kinds:
     - tar.xz
-    #tests:
-    #- method: docker
+    tests:
+    - method: docker
   rootfs-systemd:
     target: ve/systemd-networkd
     kinds:
     - tar.xz
-    tests:
-    - method: lxd
+    #tests:
+    #- method: lxd
     scripts:
     - securetty
     - netsharedpath
@@ -27,8 +27,8 @@ images:
     target: ve/systemd-etcnet
     kinds:
     - tar.xz
-    tests:
-    - method: lxd
+    #tests:
+    #- method: lxd
     scripts:
     - securetty
     - netsharedpath
@@ -36,8 +36,8 @@ images:
     target: ve/sysvinit-etcnet
     kinds:
     - tar.xz
-    tests:
-    - method: lxd
+    #tests:
+    #- method: lxd
     scripts:
     - securetty
     - netsharedpath

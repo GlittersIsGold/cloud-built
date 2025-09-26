@@ -1,7 +1,15 @@
-#!/bin/sh -eu
+#!/usr/bin/sh -eux
 
 IMAGE="${1?Pass image}"
 NAME="test-cloud-$$"
+BRANCH="${2?Pass branch}"
+BRANDING="alt-sisyphus"
+
+if [[ "$BRANCH" == "p"* ]]; then
+       BRANDING="alt-starterkit"
+elif [[ "$BRANCH" == "c10f"* ]]; then 
+       BRANDING="alt-spcontainer"
+fi
 
 at_exit() {
     vml rm --force --names "$NAME"
@@ -13,3 +21,8 @@ trap 'exit 143' HUP INT QUIT PIPE TERM
 
 vml run -i "$IMAGE" --wait-ssh --names "$NAME"
 vml ssh --check --cmd 'apt-get update && apt-get install -y vim-console' --names "$NAME"
+vml ssh --check --cmd "cat /etc/os-release | grep -q $BRANCH" --names "$NAME"
+vml ssh --check --cmd "cat /etc/os-release" --names "$NAME"
+vml ssh --check --cmd "rpm -qa | grep branding-$BRANDING-notes" --names "$NAME"
+vml ssh --check --cmd "rpm -qa | grep branding-$BRANDING-release" --names "$NAME"
+vml ssh --check --cmd 'systemctl list-units --failed | grep "0 loaded units listed."' --names "$NAME"

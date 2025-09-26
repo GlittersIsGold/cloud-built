@@ -116,4 +116,42 @@ jobs:
           ssh -A abuilder "ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-aarch64.yaml --stages build test sync --create-remote-dirs'"
       - name: Run script for vm aarch
         run: |
-          ssh -A abuilder "ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm-aarch64.yaml --stages build test sync --create-remote-dirs'"
+          ssh -A abuilder "ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm-aarch64.yaml --stages build sync --create-remote-dirs'"
+
+  testing-aarch-vm:
+    runs-on: alt-sisyphus
+    if: ${{ always() }}
+    needs: [building-aarch]
+    steps:
+      - name: Configure ssh
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/builder.key
+          chmod 600 ~/.ssh/builder.key
+          cat >>~/.ssh/config <<END
+          Host builder
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/builder.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+      - name: Copy vm-images to .local storage on x86_64-host to run tests
+        run: |
+          ssh -A builder "for br in 'p10 p11 Sisyphus'; do rsync --progress \
+                        --rsh='ssh -i ~/.ssh/builder-x86' \
+                        ~/images/$br/aarch64/alt-$br-cloud-aarch64.qcow2 $SSH_T_USER@$SSH_T_HOST:/home/$SSH_T_USER/images/; done"
+        env:
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
+      - name: Run tests
+        run: |
+          ssh -A builder "ssh -i ~/.ssh/builder-x86 $SSH_T_USER@$SSH_T_HOST '~/test_images/test.sh'"
+        env:
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
+
+

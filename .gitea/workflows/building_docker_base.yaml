@@ -1,0 +1,30 @@
+name: Building base-docker-images
+on: 
+  workflow_dispatch:
+
+jobs:
+  building-docker-base:
+    runs-on: alt-sisyphus
+    steps:
+      - name: Configure ssh
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/builder.key
+          chmod 600 ~/.ssh/builder.key
+          cat >>~/.ssh/config <<END
+          Host builder
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/builder.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+      - name: Run building base docker images
+        run: |
+          ssh builder "podman login --username $P_USER --password $P_PASS ${{ env.REPO }} && cd base-image-forge && ./build.py --use-local-source -b p10 p11 Sisyphus"
+        env:
+          P_USER: ${{ secrets.PODMAN_USER }}
+          P_PASS: ${{ secrets.PODMAN_PASS }}
