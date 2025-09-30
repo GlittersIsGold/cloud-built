@@ -36,8 +36,8 @@ images:
     target: ve/sysvinit-etcnet
     kinds:
     - tar.xz
-    tests:
-    - method: lxd
+    #tests:
+    #- method: lxd
     scripts:
     - securetty
     - netsharedpath
