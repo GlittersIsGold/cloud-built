@@ -1,6 +1,6 @@
 ---
 remote: 'builder@cloud-builder.office.basealt.ru:/home/builder/images/{branch}/{arch}'
-repository_url: http://mirror.yandex.ru/altlinux/{branch}/branch
+repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/{branch}/branch
 try_build_all: True
 log_level: debug
 
