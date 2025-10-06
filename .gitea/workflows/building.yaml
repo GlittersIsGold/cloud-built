@@ -139,17 +139,14 @@ jobs:
           SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
           SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
-      - name: Copy vm-images to .local storage on x86_64-host to run tests
+      - name: Copy vm-images to run tests on aarch64-host
         run: |
-          ssh -A builder "for br in 'p10 p11 Sisyphus'; do rsync --progress \
-                        --rsh='ssh -i ~/.ssh/builder-x86' \
-                        ~/images/$br/aarch64/alt-$br-cloud-aarch64.qcow2 $SSH_T_USER@$SSH_T_HOST:/home/$SSH_T_USER/images/; done"
+          ssh -A builder /home/$SSH_USER/test_images/copy_aarch64.sh
         env:
-          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
-          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
+          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
       - name: Run tests
         run: |
-          ssh -A builder "ssh -i ~/.ssh/builder-x86 $SSH_T_USER@$SSH_T_HOST '~/test_images/test.sh'"
+          ssh -A builder "ssh -i /home/builder/.ssh/builder-x86 $SSH_T_USER@$SSH_T_HOST /home/$SSH_T_USER/test_images/test.sh"
         env:
           SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
