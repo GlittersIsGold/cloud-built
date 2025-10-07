@@ -22,6 +22,7 @@ CMD ["/bin/bash"]"""
     name = f'cloud_build_test_{abs(hash(image))}'
     test_commads = [
         'apt-get update',
+        'apt-get dist-upgrade -y',
         'apt-get install -y vim-console',
         '[ -L /var/run ]',
         '[ -L /var/lock ]',
