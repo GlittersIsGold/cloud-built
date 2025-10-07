@@ -45,10 +45,8 @@ def test(method, image, branch, arch):
             raise Exception(f'Undefined test method {method}')
 
         for command in commands:
-            print(f"Start test for {image} on branch {branch} and arch {arch} via {method}")
             rc = subprocess.call(command, shell=True)
             if rc:
                 result = False
-            print("Finish test")
 
     return result

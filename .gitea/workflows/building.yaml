@@ -144,11 +144,20 @@ jobs:
           ssh -A builder /home/$SSH_USER/test_images/copy_aarch64.sh
         env:
           SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
-      - name: Run tests
+      - name: Rewrite ssh-config
         run: |
-          ssh -A builder "ssh -i /home/builder/.ssh/builder-x86 $SSH_T_USER@$SSH_T_HOST /home/$SSH_T_USER/test_images/test.sh"
+          cat >>~/.ssh/config <<END
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
+            IdentityFile ~/.ssh/builder.key 
+            StrictHostKeyChecking no
+          END
         env:
           SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
+      - name: Run tests
+        run: |
+          ssh -A abuilder './test_images/test.sh'
 
 
