@@ -25,7 +25,7 @@ CMD ["/bin/bash"]"""
         'apt-get install -y vim-console',
         '[ -L /var/run ]',
         '[ -L /var/lock ]',
-        f'cat /etc/os-release | grep {branch}'
+        f'cat /etc/os-release | grep -i {branch}'
     ]
 
     if branch.lower() == "sisyphus":

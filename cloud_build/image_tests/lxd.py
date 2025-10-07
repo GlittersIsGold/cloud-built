@@ -5,9 +5,9 @@ def test_lxd(image, branch, arch: str) -> List[str]:
     test_commads = [
        'apt-get update',
        'apt-get install -y vim-console',
-       f'cat /etc/os-release | grep {branch}',
-       'rpm -qa | grep branding | grep container',
-       'systemctl list-units --failed | grep 0'
+       f'cat /etc/os-release | grep -i {branch}',
+       'rpm -qa | grep -i branding | grep -i container',
+       'systemctl list-units --failed | grep -i 0'
     ]
 
     test_commad = " && ".join(test_commads)
