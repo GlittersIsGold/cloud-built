@@ -2,7 +2,7 @@ name: Building base-docker-images
 on: 
   workflow_dispatch:
 env:
-  REPO: gitea.basealt.ru
+  REPO: altlinux.space
 jobs:
   building-docker-base:
     runs-on: alt-sisyphus
