@@ -16,6 +16,7 @@ jobs:
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/builder.key
+            IdentitiesOnly yes
             StrictHostKeyChecking no
           END
         env:
@@ -24,7 +25,7 @@ jobs:
           SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
+          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
       - name: Run script for containers on x86
         run: |
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
@@ -45,6 +46,7 @@ jobs:
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/builder.key
+            IdentitiesOnly yes
             StrictHostKeyChecking no
           END
         env:
@@ -53,7 +55,7 @@ jobs:
           SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
+          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
       - name: Run script for containers on other arches
         run: |
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-other.yaml \
@@ -74,6 +76,7 @@ jobs:
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/builder.key
+            IdentitiesOnly yes
             StrictHostKeyChecking no
           END
         env:
@@ -84,9 +87,9 @@ jobs:
         run: |
           ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
       - name: Run script for vm x86
-        run: |                                        
+        run: | 
           ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm.yaml \
-           --stages build test sync --create-remote-dirs'                                                   
+           --stages build test sync --create-remote-dirs'
 
   building-aarch:
     runs-on: alt-sisyphus
@@ -100,7 +103,7 @@ jobs:
           Host abuilder
             HostName $SSH_T_HOST
             User $SSH_T_USER
-            IdentityFile ~/.ssh/builder.key 
+            IdentityFile ~/.ssh/builder.key
             IdentitiesOnly yes
             StrictHostKeyChecking no
           END
@@ -108,8 +111,8 @@ jobs:
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
           SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
-      - name: Update building script from git                                          
-        run: |                                                                         
+      - name: Update building script from git
+        run: | 
           ssh -A abuilder "ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
       - name: Run script for container on aarch
         run: |
@@ -133,6 +136,7 @@ jobs:
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/builder.key
+            IdentitiesOnly yes
             StrictHostKeyChecking no
           END
         env:
@@ -150,7 +154,8 @@ jobs:
           Host abuilder
             HostName $SSH_T_HOST
             User $SSH_T_USER
-            IdentityFile ~/.ssh/builder.key 
+            IdentityFile ~/.ssh/builder.key
+            IdentitiesOnly yes
             StrictHostKeyChecking no
           END
         env:
@@ -159,5 +164,3 @@ jobs:
       - name: Run tests
         run: |
           ssh -A abuilder './test_images/test.sh'
-
-
