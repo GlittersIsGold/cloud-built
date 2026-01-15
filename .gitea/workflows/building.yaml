@@ -62,7 +62,7 @@ jobs:
   building-x86-vm:
     runs-on: alt-sisyphus
     if: ${{ always() }}
-    needs: [building-x86-container, building-other-container] 
+    needs: building-other-container 
     steps:
       - name: Configure ssh
         run: |
