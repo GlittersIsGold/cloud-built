@@ -13,19 +13,21 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
           cat >>~/.ssh/config <<END
-          Host builder
-            HostName $SSH_HOST
-            User $SSH_USER
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
             IdentityFile ~/.ssh/builder.key
+            IdentitiesOnly yes
             StrictHostKeyChecking no
           END
         env:
-          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Run building base docker images
         run: |
-          ssh builder "podman login --username $P_USER --password $P_PASS ${{ env.REPO }} && cd base-image-forge && ./build.py --use-local-source -b p10 p11 Sisyphus"
+          ssh abuilder ssh builder-x86 "podman login --username $P_USER --password $P_PASS ${{ env.REPO }}"
+          ssh abuilder "ssh builder-x86 'cd base-image-forge && ./build.py -b p10 p11 Sisyphus'"
         env:
           P_USER: ${{ secrets.PODMAN_USER }}
           P_PASS: ${{ secrets.PODMAN_PASS }}
