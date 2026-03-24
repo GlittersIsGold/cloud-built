@@ -12,23 +12,22 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
           cat >>~/.ssh/config <<END
-          Host builder
-            HostName $SSH_HOST
-            User $SSH_USER
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
           END
         env:
-          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
       - name: Run script for containers on x86
         run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml \
-          --stages build test sync --create-remote-dirs'
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-x86.yaml --stages build test sync --create-remote-dirs'"
 
   building-other-container:
     runs-on: alt-sisyphus
@@ -41,23 +40,22 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
           cat >>~/.ssh/config <<END
-          Host builder
-            HostName $SSH_HOST
-            User $SSH_USER
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
           END
         env:
-          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
       - name: Run script for containers on other arches
         run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-other.yaml \
-          --stages build test sync --create-remote-dirs'
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && ./cloud-build.py -c ./configs/cb-ve-other.yaml --stages build test sync --create-remote-dirs'"
 
   building-x86-vm:
     runs-on: alt-sisyphus
@@ -70,23 +68,22 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
           cat >>~/.ssh/config <<END
-          Host builder
-            HostName $SSH_HOST
-            User $SSH_USER
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
           END
         env:
-          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update building script from git
         run: |
-          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
       - name: Run script for vm x86
         run: |                                        
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm.yaml \
-           --stages build test sync --create-remote-dirs'                                                   
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && ./cloud-build.py -c ./configs/cb-vm.yaml --stages build test sync --create-remote-dirs'"
 
   building-aarch:
     runs-on: alt-sisyphus
@@ -129,33 +126,21 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
           cat >>~/.ssh/config <<END
-          Host builder
-            HostName $SSH_HOST
-            User $SSH_USER
+          Host abuilder
+            HostName $SSH_T_HOST
+            User $SSH_T_USER
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
           END
         env:
-          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Copy vm-images to run tests on aarch64-host
         run: |
-          ssh -A builder /home/$SSH_USER/test_images/copy_aarch64.sh
+          ssh -A abuilder ssh builder-x86 "/home/$SSH_USER/test_images/copy_aarch64.sh"
         env:
           SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
-      - name: Rewrite ssh-config
-        run: |
-          cat >>~/.ssh/config <<END
-          Host abuilder
-            HostName $SSH_T_HOST
-            User $SSH_T_USER
-            IdentityFile ~/.ssh/builder.key 
-            StrictHostKeyChecking no
-          END
-        env:
-          SSH_T_USER: ${{ secrets.TAISHAN_SSH_USER }}
-          SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Run tests
         run: |
           ssh -A abuilder './test_images/test.sh'
