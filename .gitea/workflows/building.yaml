@@ -4,7 +4,10 @@ on:
 
 jobs:
   building-x86-container:
-    runs-on: alt-sisyphus
+    runs-on: als-huge
+    container:
+      image: registry.altlinux.org/sisyphus/node:latest
+
     steps:
       - name: Configure ssh
         run: |
