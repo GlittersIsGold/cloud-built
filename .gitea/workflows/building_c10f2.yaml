@@ -1,11 +1,11 @@
 name: Building rootfs for c10f2
-on: 
+on:
   workflow_dispatch:
-env:
-  REPO: gitea.basealt.ru
 jobs:
   building:
-    runs-on: alt-sisyphus
+    runs-on: als-huge
+    container:
+      image: registry.altlinux.org/sisyphus/node:latest
     steps:
       - name: Configure ssh
         run: |
@@ -13,27 +13,30 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/builder.key
           chmod 600 ~/.ssh/builder.key
           cat >>~/.ssh/config <<END
-          Host builder
+          Host abuilder
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/builder.key
             StrictHostKeyChecking no
           END
         env:
-          SSH_USER: ${{ secrets.BUILDER_SSH_USER }}
+          SSH_USER: ${{ secrets.TAISHAN_SSH_USER }}
           SSH_KEY: ${{ secrets.BUILDER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.BUILDER_SSH_HOST }}
+          SSH_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update cloud-build script from git
         run: |
-          ssh builder 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'          
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
       - name: Run cloud-build script for all rootfs (c10f2)
         run: |
-          ssh builder 'cd cloud-build && ./cloud-build.py -c ~/c10f2_cloud-build/cb-ve-x86-c10f2.yaml \
-          --stages build test sync --create-remote-dirs'
-      - name: Run building base docker images
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && ./cloud-build.py -c ~/c10f2_cloud-build/cb-ve-x86-c10f2.yaml --stages build test sync --create-remote-dirs'"
+      - name: Podman login
         run: |
-          ssh builder 'podman login --username $P_USER --password $P_PASS ${{ env.REPO }} && cd base-image-forge && ./build.py -b c10f2'
+          ssh -A abuilder ssh builder-x86 "podman login --username $P_USER --password $P_PASS ${{ vars.IMAGES_REPO }}"
         env:
           P_USER: ${{ secrets.PODMAN_USER }}
           P_PASS: ${{ secrets.PODMAN_PASS }}
+      - name: Run building base docker images
+        run: |
+          ssh -A abuilder "ssh builder-x86 'cd base-image-forge && ./build.py -b c10f2'"
+
 

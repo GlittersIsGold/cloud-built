@@ -7,7 +7,7 @@ BRANDING="alt-sisyphus"
 
 if [[ "$BRANCH" == "p"* ]]; then
        BRANDING="alt-starterkit"
-elif [[ "$BRANCH" == "c10f"* ]]; then 
+elif [[ "$BRANCH" == "c10f"* ]]; then
        BRANDING="alt-spcontainer"
 fi
 
@@ -25,4 +25,5 @@ vml ssh --check --cmd "cat /etc/os-release | grep -i -q $BRANCH" --names "$NAME"
 vml ssh --check --cmd "cat /etc/os-release" --names "$NAME"
 vml ssh --check --cmd "rpm -qa | grep -i branding-$BRANDING-notes" --names "$NAME"
 vml ssh --check --cmd "rpm -qa | grep -i branding-$BRANDING-release" --names "$NAME"
+vml ssh --check --cmd 'uname -a' --names "$NAME"
 vml ssh --check --cmd 'systemctl list-units --failed | grep -i "0 loaded units listed."' --names "$NAME"
