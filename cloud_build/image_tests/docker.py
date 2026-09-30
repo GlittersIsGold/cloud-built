@@ -19,7 +19,7 @@ CMD ["/bin/bash"]"""
         print('this test is skipped')
         return []
                         
-    name = f'cloud_build_test_{abs(hash(image))}'
+    name = f'test_{image}_{arch}_{branch}_{abs(hash(image))}'.lower()
     test_commads = [
         'apt-get update',
         'apt-get dist-upgrade -y',

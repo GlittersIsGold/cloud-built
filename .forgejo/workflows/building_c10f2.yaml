@@ -25,7 +25,7 @@ jobs:
           SSH_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update cloud-build script from git
         run: |
-          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git fetch origin && git pull -f origin configs --rebase'"
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git pull -f space configs --rebase'"
       - name: Run cloud-build script for all rootfs (c10f2)
         run: |
           ssh -A abuilder "ssh builder-x86 'cd cloud-build && ./cloud-build.py -c ~/c10f2_cloud-build/cb-ve-x86-c10f2.yaml --stages build test sync --create-remote-dirs'"

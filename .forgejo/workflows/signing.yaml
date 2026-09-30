@@ -27,7 +27,7 @@ jobs:
           SSH_T_HOST: ${{ secrets.TAISHAN_SSH_HOST }}
       - name: Update building script from git
         run: |
-          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git pull -f origin configs --rebase'"
+          ssh -A abuilder "ssh builder-x86 'cd cloud-build && git pull -f space configs --rebase'"
       - name: Run sign script
         run: |
           ssh -A abuilder "ssh builder-x86 'cd cloud-build && ./cloud-build.py --built-images-dir ~/images --stages copy_external_files sign sync -c ~/sign-config/master.yaml'"

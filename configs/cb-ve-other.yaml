@@ -47,6 +47,10 @@ branches:
     arches:
       loongarch64:
       riscv64:
+  p11:
+    arches:
+      loongarch64:
+    branding: alt-container
 
 scripts:
   securetty:
