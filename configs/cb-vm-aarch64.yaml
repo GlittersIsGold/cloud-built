@@ -5,7 +5,7 @@ try_build_all: True
 log_level: debug
 
 rebuild_after:
-  days: 5
+  days: 0
 
 images:
   cloud:

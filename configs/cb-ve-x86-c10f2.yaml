@@ -6,7 +6,7 @@ log_level: debug
 image_repo: 'http/altsp'
 
 rebuild_after:
-  days: 5
+  days: 0
 
 images:
   rootfs-minimal:
