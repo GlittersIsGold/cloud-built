@@ -1,6 +1,7 @@
 ---
+# we need a separated file for other arches configuration, as they rely on another repository url
 remote: '/home/builder/images/{branch}/{arch}'
-repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/ports/{arch}
+repository_url: copy:///space/ALT/ports/{arch}
 try_build_all: True
 log_level: debug
 

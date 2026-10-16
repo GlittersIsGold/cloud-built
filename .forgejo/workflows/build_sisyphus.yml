@@ -1,0 +1,59 @@
+name: Build, test and sign Sisyphus OCI images
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+jobs:
+  build-x64-ve:
+    runs-on: x64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Build x64 containers
+        run: |
+          ./cloud-build.py -c ./configs/cb-ve-x86.yaml --stages build test sync --create-remote-dirs
+
+  build-aarch64-ve:
+    runs-on: aarch64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Build aarch64 containers
+        run: |
+          ./cloud-build.py -c ./configs/cb-ve-aarch64.yaml --stages build test sync --create-remote-dirs
+
+  build-x64-other-ve:
+    runs-on: x64
+    needs: build-x64-ve
+    steps:
+       - name: Checkout repository
+         uses: actions/checkout@v7
+       - name: Build loongarch64 & riscv containers
+         run: |
+          ./cloud-build.py -c ./configs/cb-ve-other.yaml --stages build test sync --create-remote-dirs
+
+  build-x64-oci:
+    runs-on: x64
+    needs: [build-x64-other-ve, build-aarch64-ve]
+    steps:
+      - name: Login
+        run: |
+          podman login --username $P_USER --password $P_PASS ${{ vars.IMAGES_REPO }}
+        env:
+          P_USER: ${{ secrets.PODMAN_USER }}
+          P_PASS: ${{ secrets.PODMAN_PASS }}
+      - name: Build
+        run: |
+          ~/base-image-forge/build.py --use-local-source -b Sisyphus
+
+  sign:
+    runs-on: x64
+    needs: build-x64-oci
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Sign images
+        run: |
+          ./cloud-build.py --built-images-dir ~/images --stages copy_external_files sign sync -c ~/sign-config/master.yaml

@@ -1,0 +1,16 @@
+name: Build OCI images
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: x64
+    steps:
+      - name: Login
+        run: |
+          podman login --username $P_USER --password $P_PASS ${{ vars.IMAGES_REPO }}
+        env:
+          P_USER: ${{ secrets.PODMAN_USER }}
+          P_PASS: ${{ secrets.PODMAN_PASS }}
+      - name: Build
+        run: |
+          ~/base-image-forge/build.py --use-local-source -b p10 p11 Sisyphus

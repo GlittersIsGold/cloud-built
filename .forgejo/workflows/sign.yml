@@ -1,0 +1,13 @@
+name: Sign cloud images
+on:
+  workflow_dispatch:
+
+jobs:
+  building:
+    runs-on: x64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Sign images
+        run: |
+          ./cloud-build.py --built-images-dir ~/images --stages copy_external_files sign sync -c ~/sign-config/master.yaml

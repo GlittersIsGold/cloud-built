@@ -1,6 +1,6 @@
 ---
 remote: 'builder@cloud-builder.office.basealt.ru:/home/builder/images/{branch}/{arch}'
-repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/{branch}/branch
+repository_url: copy:///space/ALT/{branch}
 try_build_all: True
 log_level: debug
 
@@ -26,7 +26,7 @@ branches:
   Sisyphus:
     arches:
       aarch64:
-    repository_url: http://ftp.altlinux.org/pub/distributions/ALTLinux/{branch}
+    repository_url: copy:///space/ALT/{branch}
   p10:
     arches:
       aarch64:

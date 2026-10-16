@@ -1,0 +1,112 @@
+name: Build, test and sign cloud images
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-x64-ve:
+    runs-on: x64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Build x64 containers
+        run: |
+          ./cloud-build.py -c ./configs/cb-ve-x86.yaml --stages build test sync --create-remote-dirs
+
+  build-x64-other-ve:
+    runs-on: x64
+    needs: build-x64-ve
+    steps:
+       - name: Checkout repository
+         uses: actions/checkout@v7
+       - name: Build loongarch64 & riscv containers
+         run: |
+          ./cloud-build.py -c ./configs/cb-ve-other.yaml --stages build test sync --create-remote-dirs
+
+  build-x64-vm:
+    runs-on: x64
+    needs: build-x64-other-ve
+    steps:
+       - name: Checkout repository
+         uses: actions/checkout@v7
+       - name: Build x64 VM images
+         run: |
+          ./cloud-build.py -c ./configs/cb-vm.yaml --stages build test sync --create-remote-dirs
+
+  build-x64-oci:
+    runs-on: x64
+    needs: build-x64-vm
+    steps:
+      - name: Login
+        run: |
+          podman login --username $P_USER --password $P_PASS ${{ vars.IMAGES_REPO }}
+        env:
+          P_USER: ${{ secrets.PODMAN_USER }}
+          P_PASS: ${{ secrets.PODMAN_PASS }}
+      - name: Build
+        run: |
+          ~/base-image-forge/build.py --use-local-source -b p10 p11 Sisyphus
+
+  build-x64-c10f2-oci:
+    runs-on: x64
+    needs: build-x64-oci
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Build rootfs for c10f2 arches
+        run: |
+          ./cloud-build.py -c ~/c10f2_cloud-build/cb-ve-x86-c10f2.yaml --stages build test sync --create-remote-dirs
+      - name: Login
+        run: |
+          podman login --username $P_USER --password $P_PASS ${{ vars.IMAGES_REPO }}
+        env:
+          P_USER: ${{ secrets.PODMAN_USER }}
+          P_PASS: ${{ secrets.PODMAN_PASS }}
+      - name: Build OCI images
+        run: |
+          ~/base-image-forge/build.py -b c10f2
+
+  build-aarch64-ve:
+    runs-on: aarch64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Build aarch64 containers
+        run: |
+          ./cloud-build.py -c ./configs/cb-ve-aarch64.yaml --stages build test sync --create-remote-dirs
+
+  build-aarch64-vm:
+    runs-on: aarch64
+    needs: build-aarch64-ve
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Build aarch64 VM images
+        run: |
+          ./cloud-build.py -c ./configs/cb-vm-aarch64.yaml --stages build sync --create-remote-dirs
+
+  copy-vm-images:
+    runs-on: x64
+    needs: build-x64-vm
+    steps:
+      - name: Copy VM images to taishan
+        run: |
+          ~/test_images/copy_aarch64.sh
+
+  test-vm-images:
+    runs-on: x64
+    needs: [build-aarch64-vm, copy-vm-images]
+    steps:
+      - name: Test VM images
+        run: |
+          ssh -A abuilder '~/test_images/test.sh'
+
+  sign:
+    runs-on: x64
+    needs: test-vm-images
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Sign images
+        run: |
+          ./cloud-build.py --built-images-dir ~/images --stages copy_external_files sign sync -c ~/sign-config/master.yaml
